@@ -118,7 +118,7 @@ const PercentileComparison: React.FC = () => {
       <CardHeader title="Percentiles – Interactive Demo" />
       <CardContent>
         <ResponsiveContainer width="100%" height={300}>
-          <ScatterChart margin={{ top: 20, right: 40, bottom: 20, left: 20 }}>
+          <ScatterChart margin={{ top: 20, right: 60, bottom: 20, left: 0 }}>
             <XAxis dataKey="index" name="Index" />
             <YAxis dataKey="value" name="Value" />
             <ZAxis dataKey="z" range={[20, 100]} />
