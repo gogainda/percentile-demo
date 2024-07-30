@@ -7,6 +7,7 @@ import {
   Tooltip,
   ReferenceLine,
   ZAxis,
+  ResponsiveContainer,
 } from "recharts";
 import {
   Button,
@@ -110,41 +111,53 @@ const PercentileComparison: React.FC = () => {
   );
 
   return (
-    <Card sx={{ maxWidth: 600, margin: "auto", mt: 4 }}>
+    <Card
+      sx={{ maxWidth: { xs: "100%", sm: 600 }, margin: "auto", mt: 4, px: 2 }}
+    >
       <CardHeader title="Percentiles – Interactive Demo" />
       <CardContent>
-        <ScatterChart
-          width={600}
-          height={300}
-          margin={{ top: 20, right: 80, bottom: 20, left: 20 }}
-        >
-          <XAxis dataKey="index" name="Index" />
-          <YAxis dataKey="value" name="Value" />
-          <ZAxis dataKey="z" range={[20, 100]} />
-          <Tooltip cursor={{ strokeDasharray: "3 3" }} />
-          <Scatter data={highlightedData} fill="#8884d8" />
-          <ReferenceLine
-            y={p50.value}
-            label={{ value: "P50", position: "right" }}
-            stroke="green"
-          />
-          <ReferenceLine
-            y={pCustom.value}
-            label={{ value: `P${percentile}`, position: "right" }}
-            stroke="blue"
-          />
-          <ReferenceLine
-            y={average}
-            label={{ value: "Average", position: "right" }}
-            stroke="red"
-          />
-        </ScatterChart>
+        <ResponsiveContainer width="100%" height={300}>
+          <ScatterChart margin={{ top: 20, right: 20, bottom: 20, left: 20 }}>
+            <XAxis dataKey="index" name="Index" />
+            <YAxis dataKey="value" name="Value" />
+            <ZAxis dataKey="z" range={[20, 100]} />
+            <Tooltip cursor={{ strokeDasharray: "3 3" }} />
+            <Scatter data={highlightedData} fill="#8884d8" />
+            <ReferenceLine
+              y={p50.value}
+              label={{ value: "P50", position: "right" }}
+              stroke="green"
+            />
+            <ReferenceLine
+              y={pCustom.value}
+              label={{ value: `P${percentile}`, position: "right" }}
+              stroke="blue"
+            />
+            <ReferenceLine
+              y={average}
+              label={{ value: "Average", position: "right" }}
+              stroke="red"
+            />
+          </ScatterChart>
+        </ResponsiveContainer>
 
-        <div style={{ marginTop: "16px", display: "flex", gap: "8px" }}>
-          <Button variant="contained" onClick={regenerateData}>
+        <div
+          style={{
+            marginTop: "16px",
+            display: "flex",
+            flexDirection: { xs: "column", sm: "row" },
+            gap: "8px",
+          }}
+        >
+          <Button variant="contained" onClick={regenerateData} fullWidth>
             Randomize Data
           </Button>
-          <Button variant="contained" onClick={sortData} disabled={isSorted}>
+          <Button
+            variant="contained"
+            onClick={sortData}
+            disabled={isSorted}
+            fullWidth
+          >
             Sort Values
           </Button>
         </div>
@@ -152,11 +165,15 @@ const PercentileComparison: React.FC = () => {
         <div style={{ marginTop: "16px" }}>
           <Typography variant="body1">
             Custom Percentile:{" "}
-            <Typography variant="h6">P{percentile}</Typography>
+            <Typography variant="h6" component="span">
+              P{percentile}
+            </Typography>
           </Typography>
           <Typography variant="body1">
             Value:{" "}
-            <Typography variant="h6">{pCustom.value.toFixed(2)}</Typography>
+            <Typography variant="h6" component="span">
+              {pCustom.value.toFixed(2)}
+            </Typography>
           </Typography>
           <Slider
             value={percentile}
@@ -184,7 +201,7 @@ const PercentileComparison: React.FC = () => {
             <Link
               href="https://igorstechnoclub.com"
               target="_blank"
-              rel="noopener noreferrer"
+              rel="noopener"
             >
               Igor's Techno Club
             </Link>
