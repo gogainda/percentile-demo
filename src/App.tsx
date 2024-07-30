@@ -196,7 +196,7 @@ const PercentileComparison: React.FC = () => {
           <Typography variant="body2" align="center">
             Made by Igor at{" "}
             <Link
-              href="https://igorstechnoclub.com"
+              href="https://igorstechnoclub.com/90th-percentile-meaning/"
               target="_blank"
               rel="noopener"
             >
