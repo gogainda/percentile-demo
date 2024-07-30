@@ -152,7 +152,10 @@ const PercentileComparison: React.FC = () => {
         <div style={{ marginTop: "16px" }}>
           <Typography variant="body1">
             Custom Percentile:{" "}
-            <Typography variant="h6">{percentile}</Typography>
+            <Typography variant="h6">P{percentile}</Typography>
+          </Typography>
+          <Typography variant="body1">
+            Value: <Typography variant="h6">{pCustom.value}</Typography>
           </Typography>
           <Slider
             value={percentile}
