@@ -110,7 +110,7 @@ const PercentileComparison: React.FC = () => {
 
   return (
     <Card sx={{ maxWidth: 600, margin: "auto", mt: 4 }}>
-      <CardHeader title="Percentile and Average Comparison (Non-Uniform Distribution)" />
+      <CardHeader />
       <CardContent>
         <ScatterChart
           width={600}
