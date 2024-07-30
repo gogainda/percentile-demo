@@ -30,7 +30,7 @@ interface HighlightedDataPoint extends DataPoint {
   opacity: number;
 }
 
-const generateNonUniformData = (count = 50): DataPoint[] => {
+const generateNonUniformData = (count = 30): DataPoint[] => {
   const baseData: DataPoint[] = [];
 
   // Generate non-uniform data
@@ -118,7 +118,7 @@ const PercentileComparison: React.FC = () => {
       <CardHeader title="Percentiles – Interactive Demo" />
       <CardContent>
         <ResponsiveContainer width="100%" height={300}>
-          <ScatterChart margin={{ top: 20, right: 20, bottom: 20, left: 20 }}>
+          <ScatterChart margin={{ top: 20, right: 40, bottom: 20, left: 20 }}>
             <XAxis dataKey="index" name="Index" />
             <YAxis dataKey="value" name="Value" />
             <ZAxis dataKey="z" range={[20, 100]} />
