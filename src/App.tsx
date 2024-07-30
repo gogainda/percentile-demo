@@ -17,6 +17,7 @@ import {
   CardHeader,
   Typography,
   Link,
+  Box,
 } from "@mui/material";
 
 interface DataPoint {
@@ -141,8 +142,8 @@ const PercentileComparison: React.FC = () => {
           </ScatterChart>
         </ResponsiveContainer>
 
-        <div
-          style={{
+        <Box
+          sx={{
             marginTop: "16px",
             display: "flex",
             flexDirection: { xs: "column", sm: "row" },
@@ -160,9 +161,9 @@ const PercentileComparison: React.FC = () => {
           >
             Sort Values
           </Button>
-        </div>
+        </Box>
 
-        <div style={{ marginTop: "16px" }}>
+        <Box sx={{ marginTop: "16px" }}>
           <Typography variant="body1">
             Custom Percentile:{" "}
             <Typography variant="h6" component="span">
@@ -183,20 +184,16 @@ const PercentileComparison: React.FC = () => {
             onChange={(_, newValue) => setPercentile(newValue as number)}
             valueLabelDisplay="auto"
           />
-        </div>
+        </Box>
 
-        <div style={{ marginTop: "16px" }}>
+        <Box sx={{ marginTop: "16px" }}>
           <Typography variant="body1">
             P50 (Median): {p50.value.toFixed(2)}
           </Typography>
           <Typography variant="body1">Average: {average.toFixed(2)}</Typography>
-        </div>
-        <div id="footer">
-          <Typography
-            variant="body2"
-            align="center"
-            style={{ marginTop: "24px" }}
-          >
+        </Box>
+        <Box id="footer" sx={{ marginTop: "24px" }}>
+          <Typography variant="body2" align="center">
             Made by Igor at{" "}
             <Link
               href="https://igorstechnoclub.com"
@@ -206,7 +203,7 @@ const PercentileComparison: React.FC = () => {
               Igor's Techno Club
             </Link>
           </Typography>
-        </div>
+        </Box>
       </CardContent>
     </Card>
   );
