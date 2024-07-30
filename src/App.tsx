@@ -110,7 +110,7 @@ const PercentileComparison: React.FC = () => {
 
   return (
     <Card sx={{ maxWidth: 600, margin: "auto", mt: 4 }}>
-      <CardHeader />
+      <CardHeader title="Percentiles – Interactive Demo" />
       <CardContent>
         <ScatterChart
           width={600}
@@ -171,6 +171,22 @@ const PercentileComparison: React.FC = () => {
             P{percentile}: {pCustom.value.toFixed(2)}
           </Typography>
           <Typography variant="body1">Average: {average.toFixed(2)}</Typography>
+        </div>
+        <div id="footer">
+          <Typography
+            variant="body2"
+            align="center"
+            style={{ marginTop: "24px" }}
+          >
+            Made by Igor at{" "}
+            <Link
+              href="https://igorstechnoclub.com"
+              target="_blank"
+              rel="noopener noreferrer"
+            >
+              Igor's Techno Club
+            </Link>
+          </Typography>
         </div>
       </CardContent>
     </Card>
