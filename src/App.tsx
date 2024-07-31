@@ -176,6 +176,10 @@ const PercentileComparison: React.FC = () => {
               {pCustom.value.toFixed(2)}
             </Typography>
           </Typography>
+          <Typography variant="body1">
+            Meaning that, {100 - percentile}% of values are greater than{" "}
+            {pCustom.value}
+          </Typography>
           <Slider
             value={percentile}
             min={1}
