@@ -1,4 +1,4 @@
-import React, { useState, useCallback, useMemo } from "react";
+import React, { useState, useCallback, useMemo, useEffect } from "react";
 import {
   ScatterChart,
   Scatter,
@@ -42,29 +42,29 @@ const generateNonUniformData = (count = 30): DataPoint[] => {
     return mean + stdDev * randStdNormal;
   };
 
-  // Generate normally distributed scores centered around 75%
+  // Generate normally distributed scores centered around 225 points (75% of 300)
   for (let i = 0; i < count; i++) {
     let value;
-    // Mean of 75, standard deviation of 10
-    value = normalRandom(75, 10);
+    // Mean of 225, standard deviation of 30
+    value = normalRandom(225, 30);
     
-    // Clamp values between 0 and 100
-    value = Math.min(100, Math.max(0, Math.round(value)));
+    // Clamp values between 0 and 300
+    value = Math.min(300, Math.max(0, Math.round(value)));
     
     baseData.push({ value, index: 0 });
   }
 
   // Add a few strategic points to ensure interesting distribution
   // Add one or two high performers
-  baseData.push({ value: Math.floor(Math.random() * 5) + 95, index: 0 }); // 95-99
+  baseData.push({ value: Math.floor(Math.random() * 15) + 285, index: 0 }); // 285-299
   if (Math.random() > 0.5) {
-    baseData.push({ value: 100, index: 0 }); // Perfect score occasionally
+    baseData.push({ value: 300, index: 0 }); // Perfect score occasionally
   }
 
   // Add one or two struggling students
-  baseData.push({ value: Math.floor(Math.random() * 15) + 45, index: 0 }); // 45-59
+  baseData.push({ value: Math.floor(Math.random() * 45) + 135, index: 0 }); // 135-179
   if (Math.random() > 0.7) {
-    baseData.push({ value: Math.floor(Math.random() * 10) + 35, index: 0 }); // 35-44
+    baseData.push({ value: Math.floor(Math.random() * 30) + 105, index: 0 }); // 105-134
   }
 
   // Shuffle the array
@@ -93,8 +93,26 @@ const calculateAverage = (data: DataPoint[]): number => {
 
 const PercentileComparison: React.FC = () => {
   const [data, setData] = useState<DataPoint[]>(generateNonUniformData());
-  const [percentile, setPercentile] = useState<number>(90);
+  const [selectedScore, setSelectedScore] = useState<number>(270);
   const [isSorted, setIsSorted] = useState<boolean>(false);
+
+  // Get sorted unique scores from data
+  const availableScores = useMemo(() => {
+    const uniqueScores = Array.from(new Set(data.map(point => point.value)));
+    return uniqueScores.sort((a, b) => a - b);
+  }, [data]);
+
+  // Find the closest available score
+  const findClosestScore = useCallback((target: number) => {
+    return availableScores.reduce((prev, curr) => {
+      return Math.abs(curr - target) < Math.abs(prev - target) ? curr : prev;
+    });
+  }, [availableScores]);
+
+  // Initialize with closest available score to 270
+  useEffect(() => {
+    setSelectedScore(findClosestScore(270));
+  }, [data, findClosestScore]);
 
   const regenerateData = useCallback(() => {
     setData(generateNonUniformData());
@@ -107,23 +125,29 @@ const PercentileComparison: React.FC = () => {
     setIsSorted(true);
   }, [data]);
 
+  const calculatePercentileForScore = useCallback((score: number): number => {
+    const belowCount = data.filter(point => point.value <= score).length;
+    return Math.round((belowCount / data.length) * 100);
+  }, [data]);
+
   const p50 = useMemo(() => calculatePercentile(data, 50), [data]);
-  const pCustom = useMemo(
-    () => calculatePercentile(data, percentile),
-    [data, percentile],
-  );
   const average = useMemo(() => calculateAverage(data), [data]);
-  const yourScore = useMemo(() => pCustom.value, [pCustom]); // Your score is at the 90th percentile
+  const percentile = useMemo(() => calculatePercentileForScore(selectedScore), [selectedScore, calculatePercentileForScore]);
+
+  const handleScoreChange = (newValue: number) => {
+    const closestScore = findClosestScore(newValue);
+    setSelectedScore(closestScore);
+  };
 
   const highlightedData = useMemo<HighlightedDataPoint[]>(
     () =>
       data.map((item) => ({
         ...item,
-        z: item.index === pCustom.index ? 100 : 50,
-        opacity: item.index === pCustom.index ? 1 : 0.5,
-        isYourScore: item.index === pCustom.index,
+        z: item.value === selectedScore ? 100 : 50,
+        opacity: item.value === selectedScore ? 1 : 0.5,
+        isYourScore: item.value === selectedScore,
       })),
-    [data, pCustom],
+    [data, selectedScore],
   );
 
   return (
@@ -131,8 +155,7 @@ const PercentileComparison: React.FC = () => {
       sx={{ maxWidth: { xs: "100%", sm: 600 }, margin: "auto", mt: 4, px: 2 }}
     >
       <CardHeader 
-        title="Your Score is in the 90th Percentile!" 
-        subheader={`You scored better than ${percentile}% of your classmates`}
+        title="Percentiles Explained"
       />
       <CardContent>
         <ResponsiveContainer width="100%" height={300}>
@@ -141,7 +164,7 @@ const PercentileComparison: React.FC = () => {
             <YAxis 
               dataKey="value" 
               name="Score" 
-              label={{ value: "Exam Score (%)", angle: -90, position: "insideLeft", offset: -50 }}
+              label={{ value: "Exam Score", angle: -90, position: "insideLeft", offset: -50 }}
               domain={[0, 100]} 
             />
             <ZAxis dataKey="z" range={[20, 100]} />
@@ -175,7 +198,7 @@ const PercentileComparison: React.FC = () => {
               stroke="green"
             />
             <ReferenceLine
-              y={yourScore}
+              y={selectedScore}
               stroke="#ff5722"
               strokeWidth={2}
             />
@@ -189,15 +212,15 @@ const PercentileComparison: React.FC = () => {
         <Box sx={{ display: 'flex', justifyContent: 'center', gap: 3, mt: 2, flexWrap: 'wrap' }}>
           <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
             <Box sx={{ width: 20, height: 2, bgcolor: '#ff5722' }} />
-            <Typography variant="body2">Your Score ({yourScore.toFixed(1)}%)</Typography>
+            <Typography variant="body2">Your Score ({selectedScore.toFixed(0)})</Typography>
           </Box>
           <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
             <Box sx={{ width: 20, height: 2, bgcolor: 'green' }} />
-            <Typography variant="body2">Class Median ({p50.value.toFixed(1)}%)</Typography>
+            <Typography variant="body2">Class Median ({p50.value.toFixed(0)})</Typography>
           </Box>
           <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
             <Box sx={{ width: 20, height: 2, bgcolor: 'red' }} />
-            <Typography variant="body2">Class Average ({average.toFixed(1)}%)</Typography>
+            <Typography variant="body2">Class Average ({average.toFixed(0)})</Typography>
           </Box>
         </Box>
 
@@ -211,52 +234,43 @@ const PercentileComparison: React.FC = () => {
         </Box>
 
         <Box sx={{ marginTop: "16px" }}>
-          <Typography variant="h6" gutterBottom>
-            Your Performance Analysis
-          </Typography>
           <Typography variant="body1" paragraph>
-            With a score of {yourScore.toFixed(1)}%, you performed better than {percentile}% of your classmates. 
+            With a score of {selectedScore.toFixed(0)}, you performed better than {percentile}% of your classmates. 
             Only {100 - percentile}% of students scored higher than you.
           </Typography>
           <Typography variant="body1" paragraph>
-            {yourScore > average 
-              ? `You scored ${(yourScore - average).toFixed(1)} points above the class average.`
-              : `You scored ${(average - yourScore).toFixed(1)} points below the class average.`}
+            {selectedScore > average 
+              ? `You scored ${Math.abs(selectedScore - average).toFixed(0)} points above the class average.`
+              : `You scored ${Math.abs(average - selectedScore).toFixed(0)} points below the class average.`}
           </Typography>
           
           <Typography variant="body1" sx={{ mt: 2 }}>
-            Move the slider to explore different percentiles:
+            Move the slider to explore different scores:
           </Typography>
-          <Slider
-            value={percentile}
-            min={1}
-            max={99}
-            step={1}
-            onChange={(_, newValue) => setPercentile(newValue as number)}
-            valueLabelDisplay="auto"
-            aria-label="Percentile selector"
-            sx={{ mt: 2, mb: 1 }}
-          />
-          <Typography variant="body2" color="text.secondary">
-            A student at the {percentile}th percentile scored {pCustom.value.toFixed(1)}% or higher
-          </Typography>
-        </Box>
-
-        <Box sx={{ marginTop: "16px" }}>
-          <Typography variant="body1">
-            Class Statistics:
-          </Typography>
-          <Typography variant="body1">
-            • Median Score: {p50.value.toFixed(1)}%
-          </Typography>
-          <Typography variant="body1">
-            • Class Average: {average.toFixed(1)}%
-          </Typography>
-          <Typography variant="body1">
-            • Your Percentile: {percentile}th
+          <Box sx={{ px: 3, py: 2 }}>
+            <Slider
+              value={selectedScore}
+              min={availableScores[0]}
+              max={availableScores[availableScores.length - 1]}
+              step={null}
+              marks={availableScores.map(score => ({ value: score }))}
+              onChange={(_, newValue) => handleScoreChange(Number(newValue))}
+              valueLabelDisplay="auto"
+              aria-label="Score selector"
+              sx={{ 
+                '& .MuiSlider-markLabel': {
+                  display: 'none'
+                }
+              }}
+            />
+            <Typography variant="body2" color="text.secondary" align="center" sx={{ mt: 1 }}>
+              Score: {selectedScore}
+            </Typography>
+          </Box>
+          <Typography variant="body2" color="text.secondary" sx={{ textAlign: 'center' }}>
+            This score puts you in the {percentile}th percentile
           </Typography>
         </Box>
-
         <Box id="footer" sx={{ marginTop: "24px" }}>
           <Typography variant="body2" align="center">
             Made by Igor at{" "}
