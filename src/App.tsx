@@ -155,7 +155,7 @@ const PercentileComparison: React.FC = () => {
       sx={{ maxWidth: { xs: "100%", sm: 600 }, margin: "auto", mt: 4, px: 2 }}
     >
       <CardHeader 
-        title="Percentiles Explained"
+        title="Class Examination Results"
       />
       <CardContent>
         <ResponsiveContainer width="100%" height={300}>
