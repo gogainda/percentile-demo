@@ -244,7 +244,7 @@ const PercentileComparison: React.FC = () => {
               : `You scored ${Math.abs(average - selectedScore).toFixed(0)} points below the class average.`}
           </Typography>
           
-          <Typography variant="body1" sx={{ mt: 2 }}>
+          <Typography variant="caption" sx={{ mt: 2 }}>
             Move the slider to explore different scores:
           </Typography>
           <Box sx={{ px: 3, py: 2 }}>
